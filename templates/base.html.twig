@@ -11,6 +11,11 @@
         {% endblock %}
     </head>
     <body>
+        <div>
+            <a>Главная</a>
+            <a href="{{ path('teams') }}">Команды</a>
+            <a href="{{ path('tournaments') }}">Турниры</a>
+        </div>
         {% block body %}{% endblock %}
     </body>
 </html>

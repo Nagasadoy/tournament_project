@@ -6,7 +6,6 @@ use App\Entity\TeamMatch;
 use App\Entity\Tournament;
 use App\Repository\TeamRepository;
 use App\Repository\TournamentRepository;
-use App\Services\To;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -37,7 +36,7 @@ readonly class TournamentService
     }
 
 
-    public function createTournament(string $name, array $teamIds): void
+    public function createTournament(string $name, array $teamIds): Tournament
     {
         if (count($teamIds) < 2) {
             throw new \DomainException("В турнире должно участвовать хотя бы 2 команды");
@@ -65,6 +64,8 @@ readonly class TournamentService
 
         $this->entityManager->persist($tournament);
         $this->entityManager->flush();
+
+        return $tournament;
     }
 
     public function removeTournament(int $id): void
@@ -81,13 +82,7 @@ readonly class TournamentService
 
     public function generateScheduleTournament(Tournament $tournament): void
     {
-//        $teams = [];
-//        for ($i = 1; $i <= 10; $i++) {
-//            $teams[] = $i;
-//        }
-
         $teams = $tournament->getTeams()->toArray();
-
         $table = $this->getTournamentTable($teams);
 
         foreach ($table as $day => $matches) {
@@ -98,13 +93,10 @@ readonly class TournamentService
                     $match[1],
                     $day + 1
                 );
-                $this->entityManager->persist($teamMatch);
-                echo 'day=' . $day + 1 . " ({$match[0]->getName()}, {$match[1]->getName()}) ";
+                $tournament->addMatch($teamMatch);
             }
-            echo '<br>';
         }
         $this->entityManager->flush();
-        dd();
     }
 
     function getTournamentTable(array $teams): array

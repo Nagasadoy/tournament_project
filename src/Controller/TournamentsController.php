@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Team;
+use App\Entity\TeamMatch;
 use App\Services\Team\TeamService;
 use App\Services\Tournament\TournamentService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,9 +21,15 @@ class TournamentsController extends AbstractController
     ): Response
     {
         $tournament = $tournamentService->findTournamentBySlug($slug);
-        $tournamentService->generateScheduleTournament($tournament);
+
+        $matchesByDay = [];
+        foreach ($tournament->getMatches() as $match) {
+            $matchesByDay[$match->getDay()][] = $match;
+        }
+
         return $this->render('tournaments/tournament.html.twig', [
-            'tournament' => $tournament
+            'tournament' => $tournament,
+            'matchesByDay' => $matchesByDay
         ]);
     }
 
@@ -48,7 +55,8 @@ class TournamentsController extends AbstractController
                     }, $teams);
                 }
 
-                $tournamentService->createTournament($tournamentName, $teamIds);
+                $tournament = $tournamentService->createTournament($tournamentName, $teamIds);
+                $tournamentService->generateScheduleTournament($tournament);
             }
 
             if ($tournamentIdForDelete !== null) {

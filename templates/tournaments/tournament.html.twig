@@ -2,5 +2,14 @@
 {% block title %}
 {% endblock %}
 {% block body %}
-   <h1>{{ tournament.name }}</h1>
+   <h1>Турнир: "{{ tournament.name }}"</h1>
+   {% for day, matches in matchesByDay %}
+      <hr>
+      <span>День {{ day }}</span>
+      <br>
+      {% for match in matches %}
+         {{ match.firstTeam.name }} vs {{ match.secondTeam.name }} |
+      {% endfor %}
+      <br>
+   {% endfor %}
 {% endblock %}

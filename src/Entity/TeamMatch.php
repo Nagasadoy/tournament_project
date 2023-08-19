@@ -6,6 +6,10 @@ use App\Repository\TeamMatchRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TeamMatchRepository::class)]
+#[ORM\UniqueConstraint(
+    name: 'team_match_unique',
+    columns: ['first_team_id', 'second_team_id', 'tournament_id', 'day']
+)]
 class TeamMatch
 {
     #[ORM\Id]
@@ -21,7 +25,7 @@ class TeamMatch
     #[ORM\JoinColumn(nullable: false)]
     private Team $secondTeam;
 
-    #[ORM\ManyToOne(targetEntity: Tournament::class)]
+    #[ORM\ManyToOne(inversedBy: 'matches')]
     #[ORM\JoinColumn(nullable: false)]
     private Tournament $tournament;
 
@@ -63,5 +67,12 @@ class TeamMatch
     public function getDay(): int
     {
         return $this->day;
+    }
+
+    public function setTournament(?Tournament $tournament): static
+    {
+        $this->tournament = $tournament;
+
+        return $this;
     }
 }
