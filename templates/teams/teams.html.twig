@@ -1,0 +1,25 @@
+{% extends "base.html.twig" %}
+{% block title %}
+    Teams
+{% endblock %}
+{% block body %}
+    {% for message in app.flashes('error') %}
+        {{ message }}
+    {% endfor %}
+    <form id="form-create-team" method="POST">
+        <label for="form-create-team">
+            NAME
+            <input type="text" name="teamName">
+            <input type="submit">
+        </label>
+    </form>
+    <div>
+        {% for team in teams %}
+            <form id="form-delete-team" method="POST">
+                <input type="hidden" name="teamIdForDelete" value={{ team.id }}>
+                <div>{{team.name}}</div>
+                <input type="submit" value="Удалить">
+            </form>
+        {% endfor %}
+    </div>
+{% endblock %}

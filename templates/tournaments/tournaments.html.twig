@@ -1,0 +1,42 @@
+{% extends "base.html.twig" %}
+{% block title %}
+    Tournaments
+{% endblock %}
+{% block body %}
+    {% for message in app.flashes('error') %}
+        {{ message }}
+    {% endfor %}
+    <form id="form-create-tournament" method="POST">
+        <label>
+            Название турнира
+            <input type="text" name="tournamentName">
+            <input type="submit">
+        </label>
+        <label>
+            Команды
+            <select multiple name="teamIds[]">
+                {% for team in teams %}
+                    <option value={{ team.id }}>{{ team.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+    </form>
+    <div>
+        {% for tournament in tournaments %}
+            <form id="form-delete-tournament" method="POST">
+                <input type="hidden" name="tournamentIdForDelete" value={{ tournament.id }}>
+                <div>
+                    <a href="{{ path('tournament_schedule', {'slug': tournament.slug})}}">
+                        {{tournament.name}}
+                    </a>
+                </div>
+                {% for team in tournament.teams %}
+                    <ul>
+                        <li>{{ team.name }}</li>
+                    </ul>
+                {% endfor %}
+                <input type="submit" value="Удалить">
+            </form>
+        {% endfor %}
+    </div>
+{% endblock %}
