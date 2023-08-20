@@ -5,10 +5,10 @@
 4. перейти на localhost:8080
 
 В случае если будут ошибки, попробовать вручную выполнить команды:
-* cd docker #перейти в папку с docker compose
-* docker compose build 
-* docker compose up -d 
-* docker compose exec php bash #следующие команды вводить в открывшемся терминале
-* composer install
-* php bin/console d:m:migrate
+* `cd docker` #перейти в папку с docker compose
+* `docker compose build` 
+* `docker compose up -d` 
+* `docker compose exec php bash` #следующие команды вводить в открывшемся терминале
+* `composer install`
+* `php bin/console d:m:migrate`
 
