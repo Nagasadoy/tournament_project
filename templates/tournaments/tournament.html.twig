@@ -2,14 +2,26 @@
 {% block title %}
 {% endblock %}
 {% block body %}
-   <h1>Турнир: "{{ tournament.name }}"</h1>
-   {% for day, matches in matchesByDay %}
-      <hr>
-      <span>День {{ day }}</span>
-      <br>
-      {% for match in matches %}
-         {{ match.firstTeam.name }} vs {{ match.secondTeam.name }} |
-      {% endfor %}
-      <br>
-   {% endfor %}
+   <h1>Турнир: "{{ tournament.name }}" - {{ tournament.startDate|date("d.m.Y") }}</h1>
+
+   <table class="table">
+      <thead>
+         <tr>
+            <th scope="col">День</th>
+            <th scope="col">Матчи</th>
+         </tr>
+      </thead>
+      <tbody>
+         {% for day, matches in matchesByDay %}
+            <tr>
+               <td >День {{ day }} </td>
+               <td>
+                  {% for match in matches %}
+                     "{{ match.firstTeam.name }}" vs "{{ match.secondTeam.name }}" |
+                  {% endfor %}
+               </td>
+            </tr>
+         {% endfor %}
+      </tbody>
+   </table>
 {% endblock %}

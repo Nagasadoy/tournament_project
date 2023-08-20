@@ -18,13 +18,12 @@ class TournamentsController extends AbstractController
     public function concreteTournament(
         string $slug,
         TournamentService $tournamentService
-    ): Response
-    {
+    ): Response {
         $tournament = $tournamentService->findTournamentBySlug($slug);
 
         $matchesByDay = [];
         foreach ($tournament->getMatches() as $match) {
-            $matchesByDay[$match->getDay()][] = $match;
+            $matchesByDay[$match->getDay() . ' - ' . $match->getDate()->format('d.m.Y')][] = $match;
         }
 
         return $this->render('tournaments/tournament.html.twig', [
@@ -38,8 +37,7 @@ class TournamentsController extends AbstractController
         Request $request,
         TeamService $teamService,
         TournamentService $tournamentService
-    ): Response
-    {
+    ): Response {
         $teamIds = ($request->request->all())['teamIds'] ?? [];
         $tournamentName = $request->request->get('tournamentName') ?? null;
         $tournamentIdForDelete = $request->request->get('tournamentIdForDelete') ?? null;
@@ -48,7 +46,6 @@ class TournamentsController extends AbstractController
 
         try {
             if ($teamIds !== null && $tournamentName !== null) {
-
                 if (count($teamIds) === 0) {
                     $teamIds = array_map(function (/** @var Team $team */ $team) {
                         return $team->getId();
@@ -56,7 +53,7 @@ class TournamentsController extends AbstractController
                 }
 
                 $tournament = $tournamentService->createTournament($tournamentName, $teamIds);
-                $tournamentService->generateScheduleTournament($tournament);
+                $tournamentService->generateScheduleTournament($tournament, true);
             }
 
             if ($tournamentIdForDelete !== null) {

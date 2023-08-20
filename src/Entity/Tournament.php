@@ -6,6 +6,7 @@ use App\Repository\TournamentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TournamentRepository::class)]
 class Tournament
@@ -16,10 +17,14 @@ class Tournament
     private ?int $id = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Assert\Length(min: 1, max: 50, minMessage: 'Имя слишком короткое', maxMessage: 'Имя слишком длинное')]
     private string $name;
 
     #[ORM\Column(length: 255, unique: true)]
     private string $slug;
+
+    #[ORM\Column(length: 255, unique: true)]
+    private \DateTimeImmutable $startDate;
 
     #[ORM\ManyToMany(targetEntity: Team::class, mappedBy: 'tournaments', fetch: 'EAGER')]
     private Collection $teams;
@@ -39,6 +44,7 @@ class Tournament
         $this->slug = $slug;
         $this->teams = new ArrayCollection();
         $this->matches = new ArrayCollection();
+        $this->startDate = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -107,5 +113,10 @@ class Tournament
         }
 
         return $this;
+    }
+
+    public function getStartDate(): \DateTimeImmutable
+    {
+        return $this->startDate;
     }
 }

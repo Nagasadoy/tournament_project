@@ -3,40 +3,52 @@
     Tournaments
 {% endblock %}
 {% block body %}
-    {% for message in app.flashes('error') %}
-        {{ message }}
-    {% endfor %}
+    <h1>Просмотр и создание турниров:</h1>
     <form id="form-create-tournament" method="POST">
-        <label>
-            Название турнира
-            <input type="text" name="tournamentName">
-            <input type="submit">
-        </label>
-        <label>
-            Команды
-            <select multiple name="teamIds[]">
-                {% for team in teams %}
-                    <option value={{ team.id }}>{{ team.name }}</option>
-                {% endfor %}
-            </select>
-        </label>
+        <div class="d-flex bd-highlight w-50 gap-2">
+            <label>
+                <input type="text" class="form-control" placeholder="Название турнира" name="tournamentName">
+            </label>
+            <label>
+                <select class="form-select" style="width:auto;" multiple name="teamIds[]">
+                    {% for team in teams %}
+                        <option value={{ team.id }}>{{ team.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <button class="btn btn-primary" type="submit">Создать</button>
+        </div>
     </form>
+    <hr>
     <div>
+        <div>
+            {% for team in teams %}
+                <form id="form-delete-team" method="POST">
+                    <input type="hidden" name="teamIdForDelete" value={{ team.id }}>
+                </form>
+            {% endfor %}
+        </div>
+
         {% for tournament in tournaments %}
             <form id="form-delete-tournament" method="POST">
                 <input type="hidden" name="tournamentIdForDelete" value={{ tournament.id }}>
-                <div>
-                    <a href="{{ path('tournament_schedule', {'slug': tournament.slug})}}">
-                        {{tournament.name}}
-                    </a>
+                <div class="d-flex bd-highlight w-50">
+                    <div class="p-2 w-75">
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('tournament_schedule', {'slug': tournament.slug})}}">
+                                {{tournament.name}}
+                            </a>
+                            <button class="btn btn-outline-danger" type="submit">Удалить</button>
+                        </div>
+                    </div>
                 </div>
                 {% for team in tournament.teams %}
                     <ul>
                         <li>{{ team.name }}</li>
                     </ul>
                 {% endfor %}
-                <input type="submit" value="Удалить">
             </form>
+            <hr>
         {% endfor %}
     </div>
 {% endblock %}

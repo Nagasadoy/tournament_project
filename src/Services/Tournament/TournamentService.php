@@ -4,6 +4,7 @@ namespace App\Services\Tournament;
 
 use App\Entity\TeamMatch;
 use App\Entity\Tournament;
+use App\Repository\TeamMatchRepository;
 use App\Repository\TeamRepository;
 use App\Repository\TournamentRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,6 +20,7 @@ readonly class TournamentService
         private TeamRepository $teamRepository,
         private EntityManagerInterface $entityManager,
         private ValidatorInterface $validator,
+        private TeamMatchRepository $teamMatchRepository
     ) {
     }
 
@@ -80,9 +82,11 @@ readonly class TournamentService
         $this->entityManager->flush();
     }
 
-    public function generateScheduleTournament(Tournament $tournament): void
+    public function generateScheduleTournament(Tournament $tournament, bool $save = false): void
     {
-        $teams = $tournament->getTeams()->toArray();
+        $this->teamMatchRepository->deleteAllMatchesByTournamentId($tournament->getId());
+
+        $teams = array_values($tournament->getTeams()->toArray());
         $table = $this->getTournamentTable($teams);
 
         foreach ($table as $day => $matches) {
@@ -96,10 +100,13 @@ readonly class TournamentService
                 $tournament->addMatch($teamMatch);
             }
         }
-        $this->entityManager->flush();
+
+        if ($save) {
+            $this->entityManager->flush();
+        }
     }
 
-    function getTournamentTable(array $teams): array
+    private function getTournamentTable(array $teams): array
     {
         $n = count($teams);
 
@@ -129,12 +136,11 @@ readonly class TournamentService
 
             if (!$odd) {
                 // если четное количество команд, то первая играет с последней
-                $table[$i + $addDays][] = [$teamsInOrder[0], $teams[$n-1]];
+                $table[$i + $addDays][] = [$teamsInOrder[0], $teams[$n - 1]];
             }
 
             // перебираем со второй команды и до середины
             for ($j = 1; $j < $half; $j++) {
-
                 // если количество добавленых матчей в этот день кратно self::MAX_MATCHES_IN_DAY то увеличиваем день
                 if (isset($table[$i + $addDays]) && count($table[$i + $addDays]) % self::MAX_MATCHES_IN_DAY === 0) {
                     $addDays++;

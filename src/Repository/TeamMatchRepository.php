@@ -21,28 +21,20 @@ class TeamMatchRepository extends ServiceEntityRepository
         parent::__construct($registry, TeamMatch::class);
     }
 
-//    /**
-//     * @return TeamMatch[] Returns an array of TeamMatch objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('t.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function deleteAllMatchesByTournamentId(int $tournamentId): void
+    {
+        $ids = $this->createQueryBuilder('m')
+            ->join('m.tournament', 't')
+            ->where('t.id = :id')
+            ->setParameter('id', $tournamentId)
+            ->getQuery()
+            ->getResult();
 
-//    public function findOneBySomeField($value): ?TeamMatch
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $this->createQueryBuilder('m')
+            ->delete()
+            ->where('m.id in (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->execute();
+    }
 }

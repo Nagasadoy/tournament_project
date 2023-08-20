@@ -3,7 +3,9 @@
 namespace App\Services\Team;
 
 use App\Entity\Team;
+use App\Repository\TeamMatchRepository;
 use App\Repository\TeamRepository;
+use App\Services\Tournament\TournamentService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -13,6 +15,8 @@ readonly class TeamService
         private TeamRepository $teamRepository,
         private EntityManagerInterface $entityManager,
         private ValidatorInterface $validator,
+        private TournamentService $tournamentService,
+        private TeamMatchRepository $teamMatchRepository
     ) {
     }
 
@@ -40,6 +44,15 @@ readonly class TeamService
 
         if ($team === null) {
             throw new \DomainException("Нет команды с id=$id");
+        }
+
+        $tournamentsWhereTeamParticipated = $team->getTournaments()->toArray();
+
+        $this->entityManager->flush();
+
+        foreach ($tournamentsWhereTeamParticipated as $tournament) {
+            $tournament->removeTeam($team);
+            $this->tournamentService->generateScheduleTournament($tournament);
         }
 
         $this->entityManager->remove($team);

@@ -17,7 +17,7 @@ class Team
     private ?int $id = null;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Assert\Length(min: 1, max: 50,minMessage: 'Имя слишком короткое', maxMessage: 'Имя слишком длинное')]
+    #[Assert\Length(min: 1, max: 50, minMessage: 'Имя слишком короткое', maxMessage: 'Имя слишком длинное')]
     private string $name;
 
     #[ORM\ManyToMany(targetEntity: Tournament::class, inversedBy: 'teams')]

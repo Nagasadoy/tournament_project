@@ -1,0 +1,20 @@
+{% extends "base.html.twig" %}
+{% block title %}
+    Home
+{% endblock %}
+{% block body %}
+
+    <div>
+        <h1>Турниры:</h1>
+        <hr>
+        <ul>
+            {% for tournament in tournaments %}
+                <li>
+                    <a href="{{ path('tournament_schedule', {'slug': tournament.slug})}}">
+                        {{tournament.name}} : {{ tournament.startDate|date('d.m.Y') }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

@@ -17,20 +17,23 @@ class TeamMatch
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Team::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Team::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Team $firstTeam;
 
-    #[ORM\ManyToOne(targetEntity: Team::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Team::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Team $secondTeam;
 
     #[ORM\ManyToOne(inversedBy: 'matches')]
-    #[ORM\JoinColumn(nullable: false)]
-    private Tournament $tournament;
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    private ?Tournament $tournament = null;
 
     #[ORM\Column]
     private int $day;
+
+    #[ORM\Column]
+    private \DateTimeImmutable $date;
 
     public function __construct(
         Tournament $tournament,
@@ -42,6 +45,7 @@ class TeamMatch
         $this->firstTeam = $firstTeam;
         $this->secondTeam = $secondTeam;
         $this->day = $day;
+        $this->date = ($tournament->getStartDate())->modify('+' . ($day - 1) . ' days');
     }
 
     public function getId(): ?int
@@ -62,6 +66,11 @@ class TeamMatch
     public function getTournament(): Tournament
     {
         return $this->tournament;
+    }
+
+    public function getDate(): \DateTimeImmutable
+    {
+        return $this->date;
     }
 
     public function getDay(): int

@@ -3,22 +3,33 @@
     Teams
 {% endblock %}
 {% block body %}
-    {% for message in app.flashes('error') %}
-        {{ message }}
-    {% endfor %}
-    <form id="form-create-team" method="POST">
-        <label for="form-create-team">
-            NAME
-            <input type="text" name="teamName">
-            <input type="submit">
-        </label>
+    <h1>Просмотр и создание команд:</h1>
+    <form class="form-inline" method="POST">
+        <div class="form-group row">
+
+            <div class="d-flex bd-highlight w-50">
+                <div class="p-2 w-100 bd-highlight">
+                    <input type="text" class="form-control" name="teamName" placeholder="Название команды">
+                </div>
+                <div class="p-2 flex-shrink-1 bd-highlight">
+                    <button class="btn btn-primary" type="submit">Создать</button>
+                </div>
+            </div>
+        </div>
     </form>
+
     <div>
         {% for team in teams %}
             <form id="form-delete-team" method="POST">
+                <div class="d-flex bd-highlight w-50">
+                    <div class="p-2 w-75">
+                        <div class="d-flex justify-content-between">
+                            "{{team.name}}"
+                            <button class="btn btn-outline-danger" type="submit">Удалить</button>
+                        </div>
+                    </div>
+                </div>
                 <input type="hidden" name="teamIdForDelete" value={{ team.id }}>
-                <div>{{team.name}}</div>
-                <input type="submit" value="Удалить">
             </form>
         {% endfor %}
     </div>
